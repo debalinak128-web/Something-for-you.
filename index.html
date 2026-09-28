@@ -2,19 +2,19 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>A little something for you ✉️</title>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <style>
     :root {
-      --bg: #121316;
+      --bg: #141519;
       --card-bg: #faf7f2;
       --env-body: #c95d63;
       --env-dark: #b34a50;
       --env-flap: #d66c72;
       --accent: #e07a5f;
       --text: #2b2b2b;
-      --subtext: #666;
+      --subtext: #777;
     }
 
     * {
@@ -22,35 +22,36 @@
       margin: 0;
       padding: 0;
       user-select: none;
+      -webkit-tap-highlight-color: transparent;
     }
 
     body {
-      background: radial-gradient(circle at center, #1e2026 0%, var(--bg) 100%);
+      background: radial-gradient(circle at center, #1f2128 0%, var(--bg) 100%);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Georgia, serif;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      overflow-x: hidden;
-      perspective: 1200px;
+      overflow: hidden;
     }
 
     .hint {
       color: #8b8d96;
-      font-size: 0.9rem;
-      letter-spacing: 0.08em;
+      font-size: 0.85rem;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
       margin-bottom: 25px;
-      transition: opacity 0.5s ease;
       font-family: monospace;
       text-align: center;
+      transition: opacity 0.3s;
     }
 
-    .scene {
+    /* Envelope Presentation */
+    .envelope-box {
       position: relative;
-      width: 320px;
-      height: 220px;
+      width: 300px;
+      height: 200px;
       cursor: pointer;
     }
 
@@ -59,177 +60,174 @@
       width: 100%;
       height: 100%;
       background-color: var(--env-dark);
-      border-radius: 0 0 12px 12px;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
+      border-radius: 0 0 10px 10px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
     }
 
-    .envelope::before {
-      content: "";
+    .envelope-flap {
       position: absolute;
       top: 0;
       left: 0;
-      border-left: 160px solid transparent;
-      border-right: 160px solid transparent;
-      border-top: 115px solid var(--env-flap);
+      border-left: 150px solid transparent;
+      border-right: 150px solid transparent;
+      border-top: 110px solid var(--env-flap);
       transform-origin: top;
-      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), z-index 0.2s;
+      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
       z-index: 5;
     }
 
-    .envelope-front {
+    .envelope-pocket {
       position: absolute;
       inset: 0;
       z-index: 4;
       pointer-events: none;
     }
 
-    .envelope-front::before {
+    .envelope-pocket::before {
       content: "";
       position: absolute;
       bottom: 0;
       left: 0;
-      border-left: 160px solid var(--env-body);
-      border-right: 160px solid transparent;
-      border-top: 110px solid transparent;
-      border-bottom: 110px solid var(--env-body);
-      border-radius: 0 0 0 12px;
+      border-left: 150px solid var(--env-body);
+      border-right: 150px solid transparent;
+      border-top: 100px solid transparent;
+      border-bottom: 100px solid var(--env-body);
+      border-radius: 0 0 0 10px;
     }
 
-    .envelope-front::after {
+    .envelope-pocket::after {
       content: "";
       position: absolute;
       bottom: 0;
       right: 0;
-      border-right: 160px solid var(--env-body);
-      border-left: 160px solid transparent;
-      border-top: 110px solid transparent;
-      border-bottom: 110px solid var(--env-body);
-      border-radius: 0 0 12px 0;
+      border-right: 150px solid var(--env-body);
+      border-left: 150px solid transparent;
+      border-top: 100px solid transparent;
+      border-bottom: 100px solid var(--env-body);
+      border-radius: 0 0 10px 0;
     }
 
     .seal {
       position: absolute;
-      top: 85px;
-      left: calc(50% - 20px);
-      width: 40px;
-      height: 40px;
+      top: 80px;
+      left: calc(50% - 18px);
+      width: 36px;
+      height: 36px;
       background: #dfaa3b;
       border-radius: 50%;
       z-index: 6;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.1rem;
-      transition: transform 0.4s ease, opacity 0.4s ease;
+      font-size: 1rem;
+      transition: opacity 0.3s ease;
     }
 
-    .letter {
+    .preview-card {
       position: absolute;
       left: 15px;
       right: 15px;
       bottom: 10px;
-      height: 190px;
+      height: 160px;
       background: var(--card-bg);
-      border-radius: 8px;
-      padding: 16px;
-      box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.1);
-      transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1),
-                  z-index 0.1s ease 0.3s;
+      border-radius: 6px;
+      padding: 14px;
       z-index: 2;
-      overflow: hidden;
+      transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
       color: var(--text);
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
     }
 
-    .letter-header {
-      border-bottom: 1px dashed #d1c8be;
-      padding-bottom: 6px;
-      font-size: 0.8rem;
-      color: var(--subtext);
-      display: flex;
-      justify-content: space-between;
-      letter-spacing: 0.05em;
-    }
-
-    .letter-body {
-      font-size: 0.85rem;
-      line-height: 1.4;
-      margin-top: 8px;
-      color: #383838;
-    }
-
-    /* Fixed Polaroid Frame */
-    .polaroid {
-      display: none;
-      width: 100%;
-      height: 150px;
-      background: #000;
-      border: 3px solid #fff;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-      margin: 10px 0;
-      border-radius: 4px;
-      overflow: hidden;
-    }
-
-    .polaroid img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center;
-      display: block;
-    }
-
-    .letter-footer {
-      font-size: 0.82rem;
-      font-style: italic;
-      text-align: right;
-      color: var(--accent);
-      margin-top: 8px;
-    }
-
-    /* OPEN STATE */
-    .scene.open .envelope::before {
+    /* Peeking state */
+    .envelope-box.open .envelope-flap {
       transform: rotateX(180deg);
       z-index: 1;
     }
 
-    .scene.open .seal {
+    .envelope-box.open .seal {
       opacity: 0;
-      transform: scale(0.5);
-      pointer-events: none;
     }
 
-    .scene.open .letter {
-      transform: translateY(-130px);
-      z-index: 10;
+    .envelope-box.open .preview-card {
+      transform: translateY(-90px);
+      z-index: 8;
     }
 
-    /* EXPANDED POPUP STATE */
-    .scene.expanded .letter {
+    /* MODAL OVERLAY (The clean popup view) */
+    .modal-backdrop {
+      display: none;
       position: fixed;
-      left: 50% !important;
-      top: 50% !important;
-      bottom: auto !important;
-      right: auto !important;
-      transform: translate(-50%, -50%) !important;
-      width: 320px !important;
-      height: 440px !important;
-      z-index: 100 !important;
-      box-shadow: 0 25px 60px rgba(0,0,0,0.65);
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
       padding: 16px;
+    }
+
+    .modal-card {
+      background: var(--card-bg);
+      width: 100%;
+      max-width: 380px;
+      max-height: 88vh;
+      border-radius: 12px;
+      padding: 22px 18px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
       display: flex;
       flex-direction: column;
+      gap: 12px;
+      animation: popIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.85); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .card-meta {
+      display: flex;
       justify-content: space-between;
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      color: var(--subtext);
+      border-bottom: 1px dashed #d1c8be;
+      padding-bottom: 8px;
     }
 
-    .scene.expanded .polaroid {
+    .card-text {
+      font-size: 0.92rem;
+      line-height: 1.5;
+      color: #333;
+    }
+
+    .photo-container {
+      width: 100%;
+      background: #000;
+      border-radius: 6px;
+      overflow: hidden;
+      border: 3px solid #fff;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      margin: 4px 0;
+    }
+
+    .photo-container img {
+      width: 100%;
+      height: auto;
+      max-height: 220px;
+      object-fit: contain;
       display: block;
-      animation: fadeIn 0.5s ease forwards;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(6px); }
-      to { opacity: 1; transform: translateY(0); }
+    .card-signoff {
+      text-align: right;
+      font-style: italic;
+      color: var(--accent);
+      font-size: 0.88rem;
+      margin-top: 4px;
     }
   </style>
 </head>
@@ -237,65 +235,79 @@
 
   <div class="hint" id="status-hint">Tap the envelope to open</div>
 
-  <div class="scene" id="scene">
+  <div class="envelope-box" id="envelopeBox">
     <div class="envelope">
+      <div class="envelope-flap"></div>
       <div class="seal">❤️</div>
-      <div class="envelope-front"></div>
-      
-      <div class="letter" id="letter">
-        <div>
-          <div class="letter-header">
-            <span>TO: MY FAVORITE PERSON</span>
-            <span>OCTOBER 3</span>
-          </div>
-
-          <div class="letter-body">
-            Happy Boyfriend’s Day! Since thousands of miles won't let me hand this over in person today, you get the interactive version instead.
-          </div>
-
-          <div class="polaroid">
-            <img src="Screenshot_2026-09-29-02-43-24-51_965bbf4d18d205f782c6b8409c5773a4.jpg" alt="Memory" />
-          </div>
-
-          <p class="letter-body">
-            Counting down every day and time-zone difference until our next countdown is zero. You’re my favorite notification.
-          </p>
+      <div class="envelope-pocket"></div>
+      <div class="preview-card">
+        <div style="font-size: 0.75rem; color: #888; border-bottom: 1px dashed #ddd; padding-bottom: 4px;">
+          OCTOBER 3 • TO MY FAVORITE PERSON
         </div>
+        <p style="font-size: 0.85rem; margin-top: 10px; color: #444;">
+          Happy Boyfriend’s Day! Tap to read full note...
+        </p>
+      </div>
+    </div>
+  </div>
 
-        <div class="letter-footer">
-          Always yours &hearts;
-        </div>
+  <!-- The Full Pop-Up View -->
+  <div class="modal-backdrop" id="modalBackdrop">
+    <div class="modal-card">
+      <div class="card-meta">
+        <span>TO: MY FAVORITE PERSON</span>
+        <span>OCTOBER 3</span>
+      </div>
+
+      <p class="card-text">
+        Happy Boyfriend’s Day! Since thousands of miles won't let me hand this over in person today, you get the interactive version instead.
+      </p>
+
+      <div class="photo-container">
+        <img src="Screenshot_2026-09-29-02-43-24-51_965bbf4d18d205f782c6b8409c5773a4.jpg" alt="Call screenshot" />
+      </div>
+
+      <p class="card-text">
+        Counting down every day and time-zone difference until our next countdown is zero. You’re my favorite notification.
+      </p>
+
+      <div class="card-signoff">
+        Always yours &hearts;
       </div>
     </div>
   </div>
 
   <script>
-    const scene = document.getElementById('scene');
+    const envelopeBox = document.getElementById('envelopeBox');
+    const modalBackdrop = document.getElementById('modalBackdrop');
     const hint = document.getElementById('status-hint');
 
-    let state = 'closed';
+    let isOpen = false;
 
-    scene.addEventListener('click', () => {
-      if (state === 'closed') {
-        scene.classList.add('open');
-        state = 'opened';
+    envelopeBox.addEventListener('click', () => {
+      if (!isOpen) {
+        envelopeBox.classList.add('open');
+        isOpen = true;
         hint.innerText = "Tap the letter to read";
         confetti({
-          particleCount: 40,
-          spread: 50,
+          particleCount: 45,
+          spread: 55,
           origin: { y: 0.65 }
         });
-      } else if (state === 'opened') {
-        scene.classList.add('expanded');
-        state = 'expanded';
-        hint.innerText = "Happy Boyfriend's Day ✨";
-        confetti({
-          particleCount: 90,
-          spread: 70,
-          origin: { y: 0.5 }
-        });
+      } else {
+        openFullCard();
       }
     });
+
+    function openFullCard() {
+      modalBackdrop.style.display = 'flex';
+      hint.innerText = "Happy Boyfriend's Day ✨";
+      confetti({
+        particleCount: 100,
+        spread: 80,
+        origin: { y: 0.5 }
+      });
+    }
   </script>
 </body>
-  </html> 
+</html> 
